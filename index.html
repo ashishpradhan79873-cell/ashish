@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigiForm System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --b50:#eff6ff; --b100:#dbeafe; --b200:#bfdbfe; --b400:#60a5fa;
+  --b500:#3b82f6; --b600:#2563eb; --b700:#1d4ed8; --b800:#1e40af;
+  --bg:#f0f4ff; --sur:#ffffff; --brd:#dde4f0;
+  --txt:#0f172a; --mut:#64748b;
+  --red:#ef4444; --redbg:#fef2f2;
+  --grn:#16a34a; --grnbg:#f0fdf4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; }
+
+/* NAV */
+.nav {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 54px; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(37,99,235,.35);
+}
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-logo { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.nav-name { font-size: 16px; font-weight: 700; color: #fff; }
+.nav-sub { font-size: 10px; color: rgba(255,255,255,.65); letter-spacing: .8px; text-transform: uppercase; }
+.tabs { display: flex; gap: 4px; }
+.tab {
+  padding: 6px 16px; border-radius: 20px; font-size: 13px; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,.25); background: transparent;
+  color: rgba(255,255,255,.8); font-family: inherit; font-weight: 500; transition: all .18s;
+}
+.tab:hover { background: rgba(255,255,255,.15); color: #fff; }
+.tab.active { background: #fff; color: #1d4ed8; border-color: #fff; font-weight: 600; }
+
+/* PAGES */
+.page { display: none; max-width: 750px; margin: 0 auto; padding: 24px 16px 80px; }
+.page.active { display: block; }
+.page-head { margin-bottom: 20px; }
+.page-title { font-size: 20px; font-weight: 700; color: #1e40af; }
+.page-sub { font-size: 13px; color: var(--mut); margin-top: 3px; }
+
+/* CARD */
+.card { background: var(--sur); border: 1px solid var(--brd); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(37,99,235,.08); }
+.card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--brd); }
+.card-title { font-size: 14px; font-weight: 600; color: #1e40af; display: flex; align-items: center; gap: 8px; }
+.card-icon { width: 26px; height: 26px; background: var(--b50); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+
+/* FORM ELEMENTS */
+.field { margin-bottom: 14px; }
+.field > label { font-size: 11px; font-weight: 600; color: var(--mut); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px; }
+input[type=text] { width: 100%; padding: 10px 13px; border: 1.5px solid var(--brd); border-radius: 8px; font-size: 14px; font-family: inherit; background: #fafbff; color: var(--txt); transition: all .15s; }
+input[type=text]:focus { outline: none; border-color: var(--b500); background: #fff; box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+textarea { width: 100%; min-height: 88px; max-height: 160px; padding: 10px 13px; border: 1.5px solid var(--brd); border-radius: 8px; font-size: 13px; font-family: inherit; background: #fafbff; color: var(--txt); resize: vertical; line-height: 1.7; transition: all .15s; }
+textarea:focus { outline: none; border-color: var(--b500); background: #fff; box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+.hint { font-size: 11px; color: var(--mut); margin: 3px 0 8px; line-height: 1.5; }
+.row { display: flex; gap: 8px; }
+.row input { flex: 1; }
+
+/* BUTTONS */
+.btn { padding: 9px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; border: 1.5px solid var(--brd); background: var(--sur); color: var(--txt); font-family: inherit; font-weight: 500; transition: all .15s; white-space: nowrap; }
+.btn:hover { background: var(--b50); border-color: var(--b200); }
+.btn-p { background: #2563eb; color: #fff; border-color: #2563eb; }
+.btn-p:hover { background: #1d4ed8; border-color: #1d4ed8; }
+.btn-o { background: transparent; color: #2563eb; border-color: var(--b400); }
+.btn-o:hover { background: var(--b50); }
+.btn-full { width: 100%; padding: 12px; font-size: 15px; font-weight: 600; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-red { color: var(--red); border-color: #fca5a5; }
+.btn-red:hover { background: var(--redbg); }
+
+/* ADMIN LIST */
+.sort-bar { display: flex; gap: 5px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+.sort-bar span { font-size: 12px; color: var(--mut); font-weight: 500; }
+.sbtn { padding: 3px 10px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid var(--brd); background: var(--sur); color: var(--mut); font-family: inherit; font-weight: 500; transition: all .13s; }
+.sbtn.on { background: #2563eb; color: #fff; border-color: #2563eb; }
+.sbtn:hover:not(.on) { background: var(--b50); color: #1d4ed8; }
+
+.alist { border: 1.5px solid var(--brd); border-radius: 8px; max-height: 280px; overflow-y: auto; }
+.alist::-webkit-scrollbar { width: 4px; }
+.alist::-webkit-scrollbar-thumb { background: var(--b200); border-radius: 4px; }
+.aitem { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--brd); transition: background .1s; }
+.aitem:last-child { border-bottom: none; }
+.aitem:hover { background: var(--b50); }
+.aitem-num { font-size: 11px; font-weight: 700; color: var(--mut); min-width: 20px; text-align: center; }
+.aitem-name { flex: 1; font-size: 13px; }
+.aitem-badge { background: #2563eb; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; white-space: nowrap; }
+.obtn { width: 22px; height: 20px; border: 1px solid var(--brd); background: var(--sur); border-radius: 4px; cursor: pointer; font-size: 9px; display: flex; align-items: center; justify-content: center; color: var(--mut); }
+.obtn:hover { background: var(--b100); color: #1d4ed8; border-color: var(--b400); }
+
+/* CHECKBOXES */
+.clist { border: 1.5px solid var(--brd); border-radius: 8px; max-height: 230px; overflow-y: auto; }
+.clist::-webkit-scrollbar { width: 4px; }
+.clist::-webkit-scrollbar-thumb { background: var(--b200); border-radius: 4px; }
+.citem { display: flex; align-items: center; gap: 10px; padding: 10px 13px; border-bottom: 1px solid var(--brd); cursor: pointer; transition: background .1s; }
+.citem:last-child { border-bottom: none; }
+.citem:hover { background: var(--b50); }
+.citem.sel { background: #eff6ff; }
+.citem input[type=checkbox] { width: 15px; height: 15px; accent-color: #2563eb; cursor: pointer; flex-shrink: 0; }
+.citem-name { flex: 1; font-size: 14px; }
+.cnum { width: 22px; height: 22px; background: #2563eb; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* SELECTED TAGS */
+.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.tag { background: var(--b100); color: #1e40af; border: 1px solid var(--b200); padding: 3px 9px 3px 10px; border-radius: 20px; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.tagx { cursor: pointer; color: #2563eb; font-weight: 700; font-size: 14px; line-height: 1; }
+.tagx:hover { color: var(--red); }
+
+/* LINK BOX */
+.lbox { background: #f0f5ff; border: 1.5px dashed #93c5fd; border-radius: 8px; padding: 12px 14px; font-size: 12px; font-family: monospace; color: #1d4ed8; word-break: break-all; margin: 12px 0; line-height: 1.7; user-select: all; }
+
+/* USER FORM HERO */
+.hero { background: linear-gradient(135deg, #1d4ed8, #3b82f6); border-radius: 12px; padding: 24px 20px; margin-bottom: 16px; color: #fff; text-align: center; }
+.hero h1 { font-size: 22px; font-weight: 700; }
+.hero p { font-size: 13px; opacity: .85; margin-top: 5px; }
+
+/* METRICS */
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.metric { background: var(--sur); border: 1px solid var(--brd); border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 1px 4px rgba(37,99,235,.08); }
+.metric-num { font-size: 26px; font-weight: 700; color: #2563eb; }
+.metric-lbl { font-size: 11px; color: var(--mut); margin-top: 3px; text-transform: uppercase; letter-spacing: .4px; }
+
+/* SUBMISSIONS */
+.sub-item { border-bottom: 1px solid var(--brd); }
+.sub-item:last-child { border-bottom: none; }
+.sub-row { display: flex; align-items: center; gap: 10px; padding: 13px 16px; cursor: pointer; transition: background .1s; }
+.sub-row:hover { background: var(--b50); }
+.sub-num { font-size: 13px; font-weight: 700; color: #2563eb; min-width: 28px; }
+.sub-name { font-size: 14px; font-weight: 600; flex: 1; }
+.sub-mob { font-size: 13px; color: var(--mut); }
+.sub-note { font-size: 11px; background: var(--b100); color: #1e40af; padding: 2px 8px; border-radius: 8px; font-weight: 600; white-space: nowrap; }
+.sub-arr { font-size: 12px; color: #2563eb; margin-left: 4px; }
+.sub-detail { display: none; padding: 0 16px 14px 52px; }
+.sub-detail.open { display: block; }
+.sub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.sub-field-lbl { font-size: 11px; font-weight: 600; color: var(--mut); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.chip { display: inline-block; background: var(--b50); color: #1e40af; border: 1px solid var(--b200); padding: 2px 7px; border-radius: 6px; font-size: 11px; margin: 2px 2px 0 0; }
+.chip-n { background: #2563eb; color: #fff; font-size: 9px; font-weight: 700; padding: 0 4px; border-radius: 4px; margin-right: 2px; }
+.sub-time { font-size: 12px; color: var(--mut); margin-top: 8px; }
+
+/* SETTINGS */
+.sgrid { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; }
+.sgrid label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.sgrid input[type=checkbox] { width: 15px; height: 15px; accent-color: #2563eb; }
+.sgrid input[type=text] { margin: 0; }
+.pill { background: var(--b100); color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.pill-sel { background: #2563eb; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; display: none; }
+
+/* SUCCESS */
+.success { display: none; background: var(--grnbg); border: 1px solid #86efac; border-radius: 8px; padding: 16px; text-align: center; font-size: 15px; color: var(--grn); margin-top: 12px; }
+
+/* TOAST */
+#toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1e40af; color: #fff; padding: 10px 24px; border-radius: 24px; font-size: 14px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 999; box-shadow: 0 4px 14px rgba(30,64,175,.3); }
+#toast.show { opacity: 1; }
+.empty { padding: 16px; font-size: 13px; color: var(--mut); text-align: center; }
+.divider { border: none; border-top: 1px solid var(--brd); margin: 12px 0; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">📋</div>
+    <div>
+      <div class="nav-name">DigiForm System</div>
+      <div class="nav-sub">Form Management</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('admin')">⚙ Admin</button>
+    <button class="tab" onclick="showPage('link')">🔗 Link</button>
+    <button class="tab" onclick="showPage('user')">📝 User Form</button>
+    <button class="tab" onclick="showPage('subs')">📊 Submissions</button>
+  </div>
+</div>
+
+<!-- ========== ADMIN ========== -->
+<div id="page-admin" class="page active">
+  <div class="page-head">
+    <div class="page-title">Admin Panel</div>
+    <div class="page-sub">Fields, headings aur items manage karo</div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><div class="card-icon">⚙</div> Form Settings</div>
+    </div>
+    <div class="field"><label>Form Title</label><input type="text" id="s-title" value="Form" oninput="syncConfig()"></div>
+    <div class="field"><label>Subtitle</label><input type="text" id="s-sub" value="Apni details bharo" oninput="syncConfig()"></div>
+    <div class="divider"></div>
+    <p style="font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Teen Fields — On/Off &amp; Heading</p>
+    <div class="sgrid">
+      <label><input type="checkbox" id="on-1" checked onchange="syncConfig()"> Field 1</label>
+      <input type="text" id="name-1" value="University" oninput="syncConfig()" placeholder="Heading...">
+      <label><input type="checkbox" id="on-2" checked onchange="syncConfig()"> Field 2</label>
+      <input type="text" id="name-2" value="Course" oninput="syncConfig()" placeholder="Heading...">
+      <label><input type="checkbox" id="on-3" checked onchange="syncConfig()"> Field 3</label>
+      <input type="text" id="name-3" value="Preferences" oninput="syncConfig()" placeholder="Heading...">
+    </div>
+    <p class="hint" style="margin-top:8px">Checkbox hata do — woh field form mein nahi dikhegi</p>
+  </div>
+
+  <!-- FIELD 1 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><div class="card-icon">🏛</div><span id="albl-1">University</span></div>
+      <div style="display:flex;gap:6px"><span class="pill" id="cnt-1">0</span><span class="pill-sel" id="sel-1"></span></div>
+    </div>
+    <div class="field"><label>Single Add</label>
+      <div class="row"><input type="text" id="inp-1" placeholder="Naam likho..." onkeydown="if(event.key==='Enter')singleAdd(1)">
+      <button class="btn btn-p btn-sm" onclick="singleAdd(1)">+ Add</button></div>
+    </div>
+    <div class="field"><label>Bulk Paste — kai saare ek saath</label>
+      <textarea id="bulk-1" placeholder="Yahan kai saare names paste karo&#10;Har ek line mein ek naam:&#10;&#10;Delhi University&#10;DAVV Indore&#10;Jiwaji University&#10;..."></textarea>
+      <div class="hint">Ek line = ek item. Excel ya list se seedha paste karo.</div>
+      <button class="btn btn-o btn-full" onclick="bulkAdd(1)">📋 Bulk Add Karo</button>
+    </div>
+    <div class="divider"></div>
+    <div class="sort-bar">
+      <span>Sort:</span>
+      <button class="sbtn on" id="sort-1-c" onclick="setSort(1,'c')">Custom</button>
+      <button class="sbtn" id="sort-1-a" onclick="setSort(1,'a')">A → Z</button>
+      <button class="sbtn" id="sort-1-z" onclick="setSort(1,'z')">Z → A</button>
+      <button class="btn btn-red btn-sm" onclick="clearField(1)" style="margin-left:auto">Sab Hatao</button>
+    </div>
+    <div class="alist" id="alist-1"><p class="empty">Koi item nahi.</p></div>
+  </div>
+
+  <!-- FIELD 2 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><div class="card-icon">📚</div><span id="albl-2">Course</span></div>
+      <div style="display:flex;gap:6px"><span class="pill" id="cnt-2">0</span><span class="pill-sel" id="sel-2"></span></div>
+    </div>
+    <div class="field"><label>Single Add</label>
+      <div class="row"><input type="text" id="inp-2" placeholder="Naam likho..." onkeydown="if(event.key==='Enter')singleAdd(2)">
+      <button class="btn btn-p btn-sm" onclick="singleAdd(2)">+ Add</button></div>
+    </div>
+    <div class="field"><label>Bulk Paste — kai saare ek saath</label>
+      <textarea id="bulk-2" placeholder="Yahan kai saare names paste karo&#10;Har ek line mein ek naam:&#10;&#10;B.Sc Agriculture&#10;B.Com&#10;B.Tech&#10;..."></textarea>
+      <div class="hint">Ek line = ek item.</div>
+      <button class="btn btn-o btn-full" onclick="bulkAdd(2)">📋 Bulk Add Karo</button>
+    </div>
+    <div class="divider"></div>
+    <div class="sort-bar">
+      <span>Sort:</span>
+      <button class="sbtn on" id="sort-2-c" onclick="setSort(2,'c')">Custom</button>
+      <button class="sbtn" id="sort-2-a" onclick="setSort(2,'a')">A → Z</button>
+      <button class="sbtn" id="sort-2-z" onclick="setSort(2,'z')">Z → A</button>
+      <button class="btn btn-red btn-sm" onclick="clearField(2)" style="margin-left:auto">Sab Hatao</button>
+    </div>
+    <div class="alist" id="alist-2"><p class="empty">Koi item nahi.</p></div>
+  </div>
+
+  <!-- FIELD 3 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><div class="card-icon">⭐</div><span id="albl-3">Preferences</span></div>
+      <div style="display:flex;gap:6px"><span class="pill" id="cnt-3">0</span><span class="pill-sel" id="sel-3"></span></div>
+    </div>
+    <div class="field"><label>Single Add</label>
+      <div class="row"><input type="text" id="inp-3" placeholder="Naam likho..." onkeydown="if(event.key==='Enter')singleAdd(3)">
+      <button class="btn btn-p btn-sm" onclick="singleAdd(3)">+ Add</button></div>
+    </div>
+    <div class="field"><label>Bulk Paste — kai saare ek saath</label>
+      <textarea id="bulk-3" placeholder="Yahan kai saare paste karo&#10;Har ek line mein ek naam:&#10;&#10;Choice 1&#10;Choice 2&#10;..."></textarea>
+      <div class="hint">Ek line = ek item.</div>
+      <button class="btn btn-o btn-full" onclick="bulkAdd(3)">📋 Bulk Add Karo</button>
+    </div>
+    <div class="divider"></div>
+    <div class="sort-bar">
+      <span>Sort:</span>
+      <button class="sbtn on" id="sort-3-c" onclick="setSort(3,'c')">Custom</button>
+      <button class="sbtn" id="sort-3-a" onclick="setSort(3,'a')">A → Z</button>
+      <button class="sbtn" id="sort-3-z" onclick="setSort(3,'z')">Z → A</button>
+      <button class="btn btn-red btn-sm" onclick="clearField(3)" style="margin-left:auto">Sab Hatao</button>
+    </div>
+    <div class="alist" id="alist-3"><p class="empty">Koi item nahi.</p></div>
+  </div>
+</div>
+
+<!-- ========== LINK ========== -->
+<div id="page-link" class="page">
+  <div class="page-head">
+    <div class="page-title">Link Banao</div>
+    <div class="page-sub">Student ke liye selections pre-fill karo, link copy karo aur WhatsApp pe bhejo</div>
+  </div>
+  <div class="card">
+    <div class="field"><label>Student Ka Naam</label><input type="text" id="l-name" placeholder="e.g. Rahul Sharma"></div>
+    <div class="field"><label>Note (tumhare liye — optional)</label><input type="text" id="l-note" placeholder="e.g. Village ABC, Rahul ka form..."></div>
+    <div id="lwrap-1">
+      <div class="field">
+        <label id="llbl-1">University Pre-Select Karo</label>
+        <div class="tags" id="ltags-1"></div>
+        <div class="clist" id="lclist-1"><p class="empty">Admin se pehle add karo.</p></div>
+      </div>
+    </div>
+    <div id="lwrap-2">
+      <div class="field">
+        <label id="llbl-2">Course Pre-Select Karo</label>
+        <div class="tags" id="ltags-2"></div>
+        <div class="clist" id="lclist-2"><p class="empty">Admin se pehle add karo.</p></div>
+      </div>
+    </div>
+    <div id="lwrap-3">
+      <div class="field">
+        <label id="llbl-3">Preferences Pre-Select Karo</label>
+        <div class="tags" id="ltags-3"></div>
+        <div class="clist" id="lclist-3"><p class="empty">Admin se pehle add karo.</p></div>
+      </div>
+    </div>
+    <button class="btn btn-p btn-full" onclick="generateLink()">🔗 Link Generate Karo</button>
+  </div>
+  <div id="link-result" style="display:none">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:10px"><div class="card-icon">🔗</div> Generated Link — Copy karo aur bhejo</div>
+      <div class="lbox" id="link-url"></div>
+      <button class="btn btn-p btn-full" onclick="copyLink()">📋 Link Copy Karo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SUBMISSIONS ========== -->
+<div id="page-subs" class="page">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+    <div><div class="page-title">Submissions</div><div class="page-sub">Sabke submitted forms — naam pe click karo detail dekhne ke liye</div></div>
+    <button class="btn btn-red btn-sm" onclick="clearSubs()">Sab Clear</button>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-num" id="m-total">0</div><div class="metric-lbl">Total</div></div>
+    <div class="metric"><div class="metric-num" id="m-today">0</div><div class="metric-lbl">Aaj Ki</div></div>
+    <div class="metric"><div class="metric-num" id="m-students">0</div><div class="metric-lbl">Students</div></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div id="subs-list"><p class="empty">Koi submission nahi hai abhi.</p></div>
+  </div>
+</div>
+
+<!-- USER FORM (hidden — opens via link) -->
+<div id="page-user" class="page">
+  <div class="hero">
+    <h1 id="u-title">📋 Form</h1>
+    <p id="u-sub">Apni details bharo</p>
+  </div>
+  <div class="card">
+    <div class="field"><label>Poora Naam *</label><input type="text" id="u-name" placeholder="Apna poora naam likho"></div>
+    <div class="field"><label>Mobile Number *</label><input type="text" id="u-mob" placeholder="10 digit mobile number"></div>
+  </div>
+  <div id="ucard-1" class="card">
+    <div class="card-head">
+      <div class="card-title"><div class="card-icon">🏛</div><span id="ulbl-1">University</span></div>
+      <span style="font-size:12px;color:var(--mut)">Multiple select kar sakte ho</span>
+    </div>
+    <div class="tags" id="utags-1"></div>
+    <div class="clist" id="uclist-1"><p class="empty">Items load ho rahe hain...</p></div>
+  </div>
+  <div id="ucard-2" class="card">
+    <div class="card-head">
+      <div class="card-title"><div class="card-icon">📚</div><span id="ulbl-2">Course</span></div>
+      <span style="font-size:12px;color:var(--mut)">Multiple select kar sakte ho</span>
+    </div>
+    <div class="tags" id="utags-2"></div>
+    <div class="clist" id="uclist-2"><p class="empty">Items load ho rahe hain...</p></div>
+  </div>
+  <div id="ucard-3" class="card">
+    <div class="card-head">
+      <div class="card-title"><div class="card-icon">⭐</div><span id="ulbl-3">Preferences</span></div>
+      <span style="font-size:12px;color:var(--mut)">Multiple select kar sakte ho</span>
+    </div>
+    <div class="tags" id="utags-3"></div>
+    <div class="clist" id="uclist-3"><p class="empty">Items load ho rahe hain...</p></div>
+  </div>
+  <div class="card">
+    <button class="btn btn-p btn-full" onclick="submitForm()">✅ Submit Karo</button>
+    <div class="success" id="u-success">✅ Form submit ho gaya! Shukriya 🙏</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── STATE ──
+var DATA = { items: [[], [], []], sorts: ['c','c','c'] };
+var CFG  = { on: [true,true,true], names: ['University','Course','Preferences'], title: 'Form', sub: 'Apni details bharo' };
+var LSEL = [[], [], []];   // link page selections
+var USEL = [[], [], []];   // user form selections
+var UNOTE = '';
+var SUBS = [];
+
+// ── HELPERS ──
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/'/g, "\\'").replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg) {
+  var t = el('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+function getSorted(fi) {
+  var arr = DATA.items[fi-1].slice();
+  if (DATA.sorts[fi-1] === 'a') arr.sort(function(a,b){ return a.localeCompare(b,'hi'); });
+  else if (DATA.sorts[fi-1] === 'z') arr.sort(function(a,b){ return b.localeCompare(a,'hi'); });
+  return arr;
+}
+
+// ── PAGE SWITCH ──
+function showPage(p) {
+  ['admin','link','user','subs'].forEach(function(id) {
+    el('page-'+id).classList.toggle('active', id === p);
+  });
+  document.querySelectorAll('.tab').forEach(function(b, i) {
+    b.classList.toggle('active', ['admin','link','user','subs'][i] === p);
+  });
+  if (p === 'link') renderLinkPage();
+  if (p === 'user') { syncConfig(); renderUserForm(); }
+  if (p === 'subs') renderSubs();
+}
+
+// ── CONFIG SYNC ──
+function getConfig() {
+  CFG.title = el('s-title').value || 'Form';
+  CFG.sub   = el('s-sub').value || '';
+  CFG.on    = [el('on-1').checked, el('on-2').checked, el('on-3').checked];
+  CFG.names = [el('name-1').value||'Field 1', el('name-2').value||'Field 2', el('name-3').value||'Field 3'];
+}
+function syncConfig() {
+  getConfig();
+  // admin labels
+  for (var i = 1; i <= 3; i++) {
+    var al = el('albl-'+i); if (al) al.textContent = CFG.names[i-1];
+  }
+  // user form
+  var ut = el('u-title'); if (ut) ut.textContent = '📋 ' + CFG.title;
+  var us = el('u-sub');   if (us) us.textContent = CFG.sub;
+  for (var i = 1; i <= 3; i++) {
+    var ul = el('ulbl-'+i);  if (ul) ul.textContent = CFG.names[i-1];
+    var uc = el('ucard-'+i); if (uc) uc.style.display = CFG.on[i-1] ? 'block' : 'none';
+    var ll = el('llbl-'+i);  if (ll) ll.textContent = CFG.names[i-1] + ' pre-select karo';
+    var lw = el('lwrap-'+i); if (lw) lw.style.display = CFG.on[i-1] ? 'block' : 'none';
+  }
+}
+
+// ── ADMIN: ADD / REMOVE / SORT ──
+function singleAdd(fi) {
+  var inp = el('inp-'+fi);
+  var v = inp.value.trim();
+  if (!v) return;
+  if (DATA.items[fi-1].indexOf(v) > -1) { inp.value = ''; toast('Pehle se hai!'); return; }
+  DATA.items[fi-1].push(v);
+  inp.value = '';
+  renderAdmin(fi);
+}
+function bulkAdd(fi) {
+  var ta = el('bulk-'+fi);
+  var lines = ta.value.split('\n');
+  var added = 0;
+  lines.forEach(function(line) {
+    var v = line.trim();
+    if (v && DATA.items[fi-1].indexOf(v) === -1) { DATA.items[fi-1].push(v); added++; }
+  });
+  ta.value = '';
+  renderAdmin(fi);
+  if (added) toast(added + ' items add ho gaye! ✓');
+  else toast('Koi naya item nahi mila.');
+}
+function removeItem(fi, v) {
+  DATA.items[fi-1] = DATA.items[fi-1].filter(function(x){ return x !== v; });
+  LSEL[fi-1] = LSEL[fi-1].filter(function(x){ return x !== v; });
+  USEL[fi-1] = USEL[fi-1].filter(function(x){ return x !== v; });
+  renderAdmin(fi);
+}
+function moveItem(fi, v, dir) {
+  var arr = DATA.items[fi-1];
+  var i = arr.indexOf(v), ni = i + dir;
+  if (ni < 0 || ni >= arr.length) return;
+  var tmp = arr[i]; arr[i] = arr[ni]; arr[ni] = tmp;
+  DATA.sorts[fi-1] = 'c';
+  ['c','a','z'].forEach(function(m){ var b=el('sort-'+fi+'-'+m); if(b) b.classList.toggle('on', m==='c'); });
+  renderAdmin(fi);
+}
+function setSort(fi, m) {
+  DATA.sorts[fi-1] = m;
+  ['c','a','z'].forEach(function(x){ var b=el('sort-'+fi+'-'+x); if(b) b.classList.toggle('on', x===m); });
+  renderAdmin(fi);
+}
+function clearField(fi) {
+  if (!confirm('Sab delete karo?')) return;
+  DATA.items[fi-1] = []; LSEL[fi-1] = []; USEL[fi-1] = [];
+  renderAdmin(fi);
+}
+
+function renderAdmin(fi) {
+  var arr = getSorted(fi);
+  // count pill
+  var cp = el('cnt-'+fi); if (cp) cp.textContent = DATA.items[fi-1].length;
+  // sel pill
+  var sp = el('sel-'+fi);
+  if (sp) {
+    var sc = LSEL[fi-1].length;
+    sp.textContent = sc ? sc + ' selected' : '';
+    sp.style.display = sc ? 'inline-block' : 'none';
+  }
+  var container = el('alist-'+fi);
+  if (!container) return;
+  if (!arr.length) { container.innerHTML = '<p class="empty">Koi item nahi. Upar se add karo.</p>'; return; }
+  container.innerHTML = arr.map(function(v, i) {
+    var si = LSEL[fi-1].indexOf(v);
+    var badge = si > -1 ? '<span class="aitem-badge">Selected #'+(si+1)+'</span>' : '';
+    var movebtns = DATA.sorts[fi-1] === 'c'
+      ? '<button class="obtn" onclick="moveItem('+fi+',\''+esc(v)+'\',-1)">▲</button>'
+        +'<button class="obtn" onclick="moveItem('+fi+',\''+esc(v)+'\',1)">▼</button>'
+      : '';
+    return '<div class="aitem">'
+      + '<span class="aitem-num">' + (i+1) + '</span>'
+      + '<span class="aitem-name">' + v + '</span>'
+      + badge + movebtns
+      + '<button class="btn btn-red btn-sm" onclick="removeItem('+fi+',\''+esc(v)+'\')">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+// ── LINK PAGE ──
+function renderLinkPage() {
+  getConfig();
+  syncConfig();
+  for (var fi = 1; fi <= 3; fi++) {
+    if (!CFG.on[fi-1]) continue;
+    renderLinkChecks(fi);
+  }
+}
+function renderLinkChecks(fi) {
+  var arr = getSorted(fi);
+  var container = el('lclist-'+fi);
+  if (!container) return;
+  if (!arr.length) { container.innerHTML = '<p class="empty">Admin se pehle add karo.</p>'; renderLinkTags(fi); return; }
+  var sel = LSEL[fi-1];
+  container.innerHTML = arr.map(function(v) {
+    var idx = sel.indexOf(v);
+    var numEl = idx > -1 ? '<span class="cnum">'+(idx+1)+'</span>' : '';
+    return '<label class="citem'+(idx>-1?' sel':'')+'"><input type="checkbox"'+(idx>-1?' checked':'')
+      +' onchange="toggleLsel('+fi+',\''+esc(v)+'\',this.checked)">'
+      +'<span class="citem-name">'+v+'</span>'+numEl+'</label>';
+  }).join('');
+  renderLinkTags(fi);
+}
+function toggleLsel(fi, v, checked) {
+  if (checked) { if (LSEL[fi-1].indexOf(v) === -1) LSEL[fi-1].push(v); }
+  else LSEL[fi-1] = LSEL[fi-1].filter(function(x){ return x !== v; });
+  renderLinkChecks(fi);
+  renderAdmin(fi);
+}
+function renderLinkTags(fi) {
+  var container = el('ltags-'+fi); if (!container) return;
+  container.innerHTML = LSEL[fi-1].map(function(v, i) {
+    return '<div class="tag">'
+      + '<span style="background:#2563eb;color:#fff;font-size:9px;font-weight:700;padding:0 5px;border-radius:4px;margin-right:3px">'+(i+1)+'</span>'
+      + v + '<span class="tagx" onclick="removeLsel('+fi+',\''+esc(v)+'\')">×</span></div>';
+  }).join('');
+}
+function removeLsel(fi, v) {
+  LSEL[fi-1] = LSEL[fi-1].filter(function(x){ return x !== v; });
+  renderLinkChecks(fi);
+  renderAdmin(fi);
+}
+function generateLink() {
+  getConfig();
+  var name = el('l-name').value.trim();
+  var note = el('l-note').value.trim();
+  var params = [];
+  if (name) params.push('name=' + encodeURIComponent(name));
+  if (note) params.push('note=' + encodeURIComponent(note));
+  // only send pre-selections — items/config already in the page
+  for (var i = 0; i < 3; i++) {
+    LSEL[i].forEach(function(v){ params.push('s'+(i+1)+'='+encodeURIComponent(v)); });
+  }
+  var base = window.location.href.split('?')[0];
+  var link = base + (params.length ? '?' + params.join('&') : '');
+  el('link-url').textContent = link;
+  el('link-result').style.display = 'block';
+}
+function copyLink() {
+  var txt = el('link-url').textContent;
+  navigator.clipboard.writeText(txt).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  toast('Link copy ho gayi! ✓');
+}
+
+// ── USER FORM ──
+function renderUserForm() {
+  var ut = el('u-title'); if (ut) ut.textContent = '📋 ' + CFG.title;
+  var us = el('u-sub');   if (us) us.textContent = CFG.sub;
+  for (var fi = 1; fi <= 3; fi++) {
+    var uc = el('ucard-'+fi); if (uc) uc.style.display = CFG.on[fi-1] ? 'block' : 'none';
+    var ul = el('ulbl-'+fi);  if (ul) ul.textContent = CFG.names[fi-1];
+    if (!CFG.on[fi-1]) continue;
+    var arr = DATA.items[fi-1];
+    var container = el('uclist-'+fi);
+    if (!container) continue;
+    if (!arr.length) { container.innerHTML = '<p class="empty">Koi item nahi.</p>'; renderUserTags(fi); continue; }
+    var sel = USEL[fi-1];
+    // pre-selected first, then rest
+    var selArr = arr.filter(function(v){ return sel.indexOf(v) > -1; });
+    var rest   = arr.filter(function(v){ return sel.indexOf(v) === -1; });
+    var ordered = selArr.concat(rest);
+    container.innerHTML = ordered.map(function(v) {
+      var idx = sel.indexOf(v);
+      var numEl = idx > -1 ? '<span class="cnum">'+(idx+1)+'</span>' : '';
+      return '<label class="citem'+(idx>-1?' sel':'')+'"><input type="checkbox"'+(idx>-1?' checked':'')
+        +' onchange="toggleUsel('+fi+',\''+esc(v)+'\',this.checked)">'
+        +'<span class="citem-name">'+v+'</span>'+numEl+'</label>';
+    }).join('');
+    renderUserTags(fi);
+  }
+}
+function toggleUsel(fi, v, checked) {
+  if (checked) { if (USEL[fi-1].indexOf(v) === -1) USEL[fi-1].push(v); }
+  else USEL[fi-1] = USEL[fi-1].filter(function(x){ return x !== v; });
+  renderUserForm();
+}
+function renderUserTags(fi) {
+  var container = el('utags-'+fi); if (!container) return;
+  container.innerHTML = USEL[fi-1].map(function(v, i) {
+    return '<div class="tag">'
+      + '<span style="background:#2563eb;color:#fff;font-size:9px;font-weight:700;padding:0 5px;border-radius:4px;margin-right:3px">'+(i+1)+'</span>'
+      + v + '<span class="tagx" onclick="removeUtag('+fi+',\''+esc(v)+'\')">×</span></div>';
+  }).join('');
+}
+function removeUtag(fi, v) {
+  USEL[fi-1] = USEL[fi-1].filter(function(x){ return x !== v; });
+  renderUserForm();
+}
+function submitForm() {
+  var name = el('u-name').value.trim();
+  var mob  = el('u-mob').value.trim();
+  if (!name) { alert('Naam zaruri hai!'); return; }
+  if (!mob)  { alert('Mobile number zaruri hai!'); return; }
+  SUBS.push({
+    name: name, mob: mob,
+    f: [USEL[0].slice(), USEL[1].slice(), USEL[2].slice()],
+    note: UNOTE,
+    time: new Date().toLocaleString('hi-IN'),
+    date: new Date().toDateString()
+  });
+  var sb = el('u-success'); if (sb) sb.style.display = 'block';
+  el('u-name').value = ''; el('u-mob').value = '';
+  USEL = [[],[],[]]; UNOTE = '';
+  setTimeout(function(){ if(sb) sb.style.display='none'; renderUserForm(); }, 3000);
+}
+
+// ── SUBMISSIONS ──
+function renderSubs() {
+  getConfig();
+  var today = new Date().toDateString();
+  el('m-total').textContent    = SUBS.length;
+  el('m-today').textContent    = SUBS.filter(function(s){ return s.date === today; }).length;
+  el('m-students').textContent = SUBS.length;
+  var container = el('subs-list'); if (!container) return;
+  if (!SUBS.length) { container.innerHTML = '<p class="empty" style="padding:20px">Koi submission nahi hai abhi.</p>'; return; }
+  container.innerHTML = SUBS.slice().reverse().map(function(s, i) {
+    var num = SUBS.length - i;
+    var noteBadge = s.note ? '<span class="sub-note">' + s.note + '</span>' : '';
+    var detailId = 'detail-' + num;
+    var chips = function(arr) {
+      if (!arr || !arr.length) return '<span style="color:var(--mut);font-size:13px">—</span>';
+      return arr.map(function(v, j) {
+        return '<span class="chip"><span class="chip-n">'+(j+1)+'</span>'+v+'</span>';
+      }).join('');
+    };
+    var detail = '';
+    for (var fi = 0; fi < 3; fi++) {
+      if (!CFG.on[fi]) continue;
+      detail += '<div><div class="sub-field-lbl">'+CFG.names[fi]+'</div>'+chips(s.f[fi])+'</div>';
+    }
+    return '<div class="sub-item">'
+      + '<div class="sub-row" onclick="toggleDetail(\''+detailId+'\')">'
+      + '<span class="sub-num">' + num + '</span>'
+      + '<span class="sub-name">' + s.name + '</span>'
+      + '<span class="sub-mob">📱 ' + s.mob + '</span>'
+      + noteBadge
+      + '<span class="sub-arr" id="arr-'+num+'">▼</span>'
+      + '</div>'
+      + '<div class="sub-detail" id="' + detailId + '">'
+      + '<div class="sub-grid">' + detail + '</div>'
+      + '<div class="sub-time">🕐 ' + s.time + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+function toggleDetail(id) {
+  var d = el(id); if (!d) return;
+  var open = d.classList.toggle('open');
+  // find arrow
+  var num = id.replace('detail-','');
+  var arr = el('arr-'+num); if (arr) arr.textContent = open ? '▲' : '▼';
+}
+function clearSubs() {
+  if (!confirm('Sab submissions delete karo?')) return;
+  SUBS = []; renderSubs();
+}
+
+// ── INIT ──
+// Demo data
+DATA.items[0] = ['DAVV Indore','Delhi University','Jiwaji University Gwalior','Barkatullah University','RGPV Bhopal','Vikram University Ujjain'];
+DATA.items[1] = ['B.A.','B.Com','B.Sc Agriculture','B.Tech','BCA','BBA','MBA','M.Sc'];
+DATA.items[2] = ['Choice 1','Choice 2','Choice 3','Choice 4','Choice 5'];
+renderAdmin(1); renderAdmin(2); renderAdmin(3);
+syncConfig();
+
+// ── URL PARAMS: if link is opened by user ──
+(function() {
+  var p = new URLSearchParams(window.location.search);
+  if (!p.toString()) return;
+
+  // read student name & note
+  var name = p.get('name'); if (name && el('u-name')) el('u-name').value = decodeURIComponent(name);
+  var note = p.get('note'); if (note) UNOTE = decodeURIComponent(note);
+
+  // read pre-selections only (items already in page)
+  for (var i = 0; i < 3; i++) {
+    p.getAll('s'+(i+1)).forEach(function(v) {
+      v = decodeURIComponent(v);
+      if (DATA.items[i].indexOf(v) > -1 && USEL[i].indexOf(v) === -1) USEL[i].push(v);
+    });
+  }
+
+  // show user form, hide admin nav
+  ['admin','link','subs'].forEach(function(id){ var pg=el('page-'+id); if(pg) pg.classList.remove('active'); });
+  var up = el('page-user'); if(up) up.classList.add('active');
+  document.querySelector('.nav .tabs').style.display = 'none';
+
+  syncConfig();
+  renderUserForm();
+})();
+</script>
+</body>
+</html>
